@@ -157,7 +157,60 @@ void remove_element(MerkleTree *tree, const char *data) {
 }
 
 MerkleProof *generate_proof(MerkleTree *tree, const char *data) {
-    // ToDo
+
+      if (tree == NULL || data == NULL || tree->root == NULL) {
+        return NULL;
+    }
+
+
+    unsigned char hash[HASH_SIZE];
+    sha256_hash(data, strlen(data), hash);
+
+
+    Node *frunza = NULL;
+    for (int i = 0; i < tree->leaf_count; i++) {
+        if (memcmp(tree->leaves[i]->hash, hash, HASH_SIZE) == 0) {
+            frunza = tree->leaves[i];
+            break;
+        }
+    }
+
+    if (frunza == NULL) {
+        printf("%s nu a fost găsit în arbore.\n", data);
+        return NULL; 
+    }
+
+  
+    MerkleProof *proof = malloc(sizeof(MerkleProof));
+    proof->count = 0;
+    proof->siblings = malloc(tree->leaf_count * sizeof(unsigned char*));
+    proof->directions = malloc(tree->leaf_count * sizeof(int));
+
+    Node *current = frunza;
+    printf("Merkle Proof pentru %s:\n", data);
+    printf("Hash frunza: %s\n", hash_to_string(hash));
+
+    while (current->parent != NULL) {
+        Node *parent = current->parent;
+
+        if (parent->left == current) {
+            proof->siblings[proof->count] = parent->right->hash;  
+            proof->directions[proof->count] = 1; 
+            printf("%d. dr: %s\n", proof->count + 1, hash_to_string(parent->right->hash));
+        } else {
+            
+            proof->siblings[proof->count] = parent->left->hash; 
+            proof->directions[proof->count] = 0;  
+            printf("%d. st: %s\n", proof->count + 1, hash_to_string(parent->left->hash));
+        }
+
+        proof->count++;
+        current = parent; 
+    }
+
+    printf("Root: %s\n\n", hash_to_string(tree->root->hash));
+
+    return proof;
 }
 
 bool verify_proof(const unsigned char *root_hash, const char *data, MerkleProof *proof) {
