@@ -6,7 +6,7 @@
 void linie(char *str) {
     char *write = str, *read = str;
     while (*read) {
-        if (*read != '\"' && *read != ',' && *read != '\n' && *read != '\r') {
+        if (*read != '\"' && *read != ',' && *read != '\n') {
             *write++ = *read;
         }
         read++;
@@ -18,10 +18,6 @@ int main() {
     MerkleTree *tree = create_merkle_tree();
     
     FILE *file = fopen("students.txt", "r");
-    if (!file) {
-        printf("Nu s-a putut deschide fișierul students.txt\n");
-        return 1;
-    }
     
     char line[256];
     while (fgets(line, sizeof(line), file)) {
@@ -31,19 +27,19 @@ int main() {
     }
 
     fclose(file);
-    print_tree(tree);
+   // print_tree(tree);
 
-    // const char *student_name = "Eric Iov";
-    // MerkleProof *proof = generate_proof(tree, student_name);
+    const char *student_name = "Eric Iov";
+    MerkleProof *proof = generate_proof(tree, student_name);
 
-    // const unsigned char *root_hash = get_root_hash(tree);
-    // bool valid = verify_proof(root_hash, student_name, proof);
+    const unsigned char *root_hash = get_root_hash(tree);
+    bool valid = verify_proof(root_hash, student_name, proof);
 
-    //         if (valid) {
-    //             printf("proof valid.\n");
-    //         } else {
-    //             printf("proof invalid.\n");
-    //         }
+            if (valid) {
+                printf("proof valid.\n");
+            } else {
+                printf("proof invalid.\n");
+            }
     free_merkle_tree(tree);
     
 

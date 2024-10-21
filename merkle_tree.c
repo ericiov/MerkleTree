@@ -187,8 +187,8 @@ MerkleProof *generate_proof(MerkleTree *tree, const char *data) {
     proof->directions = malloc(tree->leaf_count * sizeof(int));
 
     Node *current = frunza;
-    printf("Merkle Proof pentru %s:\n", data);
-    printf("Hash frunza: %s\n", hash_to_string(hash));
+    
+    printf("Hash data: %s\n", hash_to_string(hash));
 
     while (current->parent != NULL) {
         Node *parent = current->parent;
